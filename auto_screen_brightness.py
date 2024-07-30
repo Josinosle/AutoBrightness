@@ -3,6 +3,8 @@ import time
 import configparser
 
 def backlight_target(AmbientBrightness, CurrentBacklight, config):
+    global PollingRate
+    global DisplayDriver
 
     CurrentBacklight = int(CurrentBacklight) #Convert backlight string to an int to work with
 
@@ -14,8 +16,16 @@ def backlight_target(AmbientBrightness, CurrentBacklight, config):
         Increment = -1
     else:
         Increment = 0
-    
+
     NewBrightness = CurrentBacklight + Increment
+    
+    if check_on_AC_power():
+        with open("/sys/class/backlight/" + DisplayDriver + "/max_brightness","r") as MaximumBrightnessFile:
+            NewBrightness = int(MaximumBrightnessFile.read())
+            MaximumBrightnessFile.close()
+            PollingRate = 1 
+    else:
+        PollingRate = float(config[2])
 
     if NewBrightness < int(config[1]):
         return config[1]
@@ -68,6 +78,15 @@ def user_configs():
             config.write(configfile)
         user_configs()
 
+def check_on_AC_power():
+    with open("/sys/class/power_supply/ACAD/online","r") as OnAcCheck:
+        if int(OnAcCheck.read()) == 1:
+            OnAcCheck.close()
+            return True
+        else:
+            OnAcCheck.close()
+            return False
+
 """
 Init
 """
@@ -82,4 +101,3 @@ print("Script Running")
 while True:
     change_backlight(config)
     time.sleep(PollingRate)
-quit
