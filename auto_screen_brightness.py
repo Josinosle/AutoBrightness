@@ -39,7 +39,6 @@ def read_ambient_light():
         AmbientBrightness = AmbientBrightnessFile.read()
         AmbientBrightnessFile.close()
         
-    print(AmbientBrightness)
     return AmbientBrightness
 
 def read_backlight_brightness():
