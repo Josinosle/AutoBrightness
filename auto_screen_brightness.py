@@ -38,7 +38,8 @@ def read_ambient_light():
     with open("/sys/bus/iio/devices/iio:device0/in_illuminance_raw", "r") as AmbientBrightnessFile:
         AmbientBrightness = AmbientBrightnessFile.read()
         AmbientBrightnessFile.close()
-    
+        
+    print(AmbientBrightness)
     return AmbientBrightness
 
 def read_backlight_brightness():
@@ -74,13 +75,13 @@ def user_configs():
         print("Config file unavailable: creating new")
         
         config = configparser.ConfigParser()
-        config['DEFAULT'] = {"brightness_scaling": "1",
+        config['DEFAULT'] = {"brightness_scaling": "2",
                              "minimum_brightness": "30",
                              "polling_rate": "0.1",
                              "max_brightness_on_ac": "true"}
         with open("auto_brightness.conf", "w") as configfile:
             config.write(configfile)
-        user_configs()
+        return user_configs()
 
 def check_on_AC_power():
     with open("/sys/class/power_supply/ACAD/online","r") as OnAcCheck:
