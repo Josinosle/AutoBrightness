@@ -8,8 +8,6 @@ def backlight_target(AmbientBrightness, CurrentBacklight, config):
 
     Target = int(float(AmbientBrightness)*float(config[0])) #Backlight target aims for configurable proportion of ambient brightness
     
-    print(AmbientBrightness)
-
     if Target > CurrentBacklight:
         Increment = 1 
     elif Target < CurrentBacklight:
@@ -55,15 +53,17 @@ def user_configs():
         config.read("auto_brightness.conf")
         BrightnessScaling = config["DEFAULT"]["brightness_scaling"] 
         MinimumBrightness = config["DEFAULT"]["minimum_brightness"]
+        PollingRate = config["DEFAULT"]["polling_rate"]
 
-        RuntimeConfigs = [BrightnessScaling,MinimumBrightness]
+        RuntimeConfigs = [BrightnessScaling,MinimumBrightness,PollingRate]
         return RuntimeConfigs
     except:
         print("Config file unavailable: creating new")
         
         config = configparser.ConfigParser()
         config['DEFAULT'] = {"brightness_scaling": "1",
-                             "minimum_brightness": "100"}
+                             "minimum_brightness": "30",
+                             "polling_rate": "0.1"}
         with open("auto_brightness.conf", "w") as configfile:
             config.write(configfile)
 
@@ -72,14 +72,13 @@ Init
 """
 DisplayDriver = os.popen("ls /sys/class/backlight").read().strip("\n")
 config = user_configs()
-print("Display Driver:",DisplayDriver,"\nUser Configs:\nScreen brightness factor:",config[0])
-
-
+print("Display Driver:",DisplayDriver,"\nUser Configs:\nBrightness Scaling:",config[0],"\nMinimum Brightness:",config[1],"\nPolling Rate:",config[2])
+PollingRate = float(config[2])
 """
 Main runtime loop
 """
 print("Script Running")
 while True:
     change_backlight(config)
-    time.sleep(0.1)
+    time.sleep(PollingRate)
 quit
