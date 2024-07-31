@@ -1,9 +1,9 @@
 [Unit]
 Description=configurable auto brightness service
-After=network.target
+After=multi-user.target
 
 [Service]
-ExecStart=/usr/bin/env python3 ~/auto-brightness/auto_brightness.py
+ExecStart=/usr/bin/python3 ~/auto-brightness/auto_brightness.py
 Type=simple
 Restart=always
 RestartSec=1

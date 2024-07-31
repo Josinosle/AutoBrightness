@@ -59,10 +59,13 @@ def change_backlight(config):
     set_backlight_brightness(BacklightTarget)
 
 def user_configs():
+
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
     try:
         config = configparser.ConfigParser()
 
-        config.read("auto_brightness.conf")
+        config.read(script_dir+"/auto_brightness.conf")
         BrightnessScaling = config["DEFAULT"]["brightness_scaling"] 
         MinimumBrightness = config["DEFAULT"]["minimum_brightness"]
         PollingRate = config["DEFAULT"]["polling_rate"]
@@ -81,7 +84,7 @@ def user_configs():
                              "polling_rate": "0.1",
                              "max_brightness_on_ac": "true",
                              "ac_brightness_percent": "100"}
-        with open("auto_brightness.conf", "w") as configfile:
+        with open(script_dir+"/auto_brightness.conf", "w") as configfile:
             config.write(configfile)
         return user_configs()
 
