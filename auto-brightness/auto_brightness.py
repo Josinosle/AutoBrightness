@@ -21,7 +21,7 @@ def backlight_target(AmbientBrightness, CurrentBacklight, config):
     
     if check_on_AC_power() and config[3]=="true":
         with open("/sys/class/backlight/" + DisplayDriver + "/max_brightness","r") as MaximumBrightnessFile:
-            NewBrightness = int(MaximumBrightnessFile.read())
+            NewBrightness = int(float(MaximumBrightnessFile.read())*config[4])
             MaximumBrightnessFile.close()
             PollingRate = 1 
     else:
@@ -67,8 +67,10 @@ def user_configs():
         MinimumBrightness = config["DEFAULT"]["minimum_brightness"]
         PollingRate = config["DEFAULT"]["polling_rate"]
         MaxBrightnessOnAc = config["DEFAULT"]["max_brightness_on_ac"]
+        AcBrightnessPercent = config["DEFAULT"]["ac_brightness_percent"]
 
-        RuntimeConfigs = [BrightnessScaling,MinimumBrightness,PollingRate,MaxBrightnessOnAc]
+
+        RuntimeConfigs = [BrightnessScaling,MinimumBrightness,PollingRate,MaxBrightnessOnAc,AcBrightnessPercent]
         return RuntimeConfigs
     except:
         print("Config file unavailable: creating new")
@@ -77,7 +79,8 @@ def user_configs():
         config['DEFAULT'] = {"brightness_scaling": "2",
                              "minimum_brightness": "30",
                              "polling_rate": "0.1",
-                             "max_brightness_on_ac": "true"}
+                             "max_brightness_on_ac": "true",
+                             "ac_brightness_percent": "100"}
         with open("auto_brightness.conf", "w") as configfile:
             config.write(configfile)
         return user_configs()
@@ -98,6 +101,7 @@ DisplayDriver = os.popen("ls /sys/class/backlight").read().strip("\n")
 config = user_configs()
 print("Display Driver:",DisplayDriver,"\nUser Configs:\nBrightness Scaling:",config[0],"\nMinimum Brightness:",config[1],"\nPolling Rate:",config[2])
 PollingRate = float(config[2])
+config[4]=float(config[4])/100
 """
 Main runtime loop
 """
