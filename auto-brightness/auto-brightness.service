@@ -1,12 +1,11 @@
 [Unit]
-Description=configurable auto brightness service
+Description=Configurable auto brightness service
 After=multi-user.target
 
 [Service]
 ExecStart=/usr/bin/python3 ~/auto-brightness/auto_brightness.py
 Type=simple
 Restart=always
-RestartSec=1
 
 [Install]
 WantedBy=multi-user.target
